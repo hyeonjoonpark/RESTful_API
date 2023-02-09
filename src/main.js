@@ -28,8 +28,8 @@ const server = http.createServer((req, res) => {
     }
 
     const result = await route.callback();
-    res.statusCode = result.statusCode;
-    res.end(result.body);
+    res.statusCode = result.statusCode; // TODO: Error fix
+    res.end(result.body); // TODO: Error fix
   }
 });
 
