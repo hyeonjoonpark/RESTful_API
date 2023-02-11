@@ -1,4 +1,4 @@
-//@ts-check
+// @ts-nocheck
 
 // 프레임워크 없이 간단한 토이프로젝트 웹서버 만들기
 
@@ -28,13 +28,21 @@ const server = http.createServer((req, res) => {
     }
 
     const result = await route.callback();
-    res.statusCode = result.statusCode; // TODO: Error fix
-    res.end(result.body); // TODO: Error fix
+    res.statusCode = result.statusCode;
+    if (result.body === "string") {
+      res.end(result.body);
+    } else {
+      res.setHeader("Content-Type", "application/json; charset=utf-8");
+      res.end(JSON.stringify(result.body));
+    }
+    res.end(result.body);
   }
+
+  main();
 });
 
 const PORT = 8000;
 
 server.listen(PORT, () => {
-  console.log(`The server is listeninh on port : ${PORT}`);
+  console.log(`The server is listening on port : ${PORT}`);
 });
