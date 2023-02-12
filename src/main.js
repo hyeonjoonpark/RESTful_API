@@ -33,15 +33,22 @@ const server = http.createServer((req, res) => {
       return;
     }
 
-    /** @type {string} */
-    const body = await new Promise((resolve) => {
-      req.setEncoding("utf-8");
-      req.on("data", (data) => {
-        resolve(data);
-      });
-    });
+    /** @type {Object.<string, *> | undefined} */
+    const reqBody =
+      (req.headers["content-Type"] === "aplication/json" &&
+        (await new Promise((resolve, reject) => {
+          req.setEncoding("utf-8");
+          req.on("data", (data) => {
+            try {
+              resolve(JSON.parse(data));
+            } catch {
+              reject(new Error("Ill-formed json"));
+            }
+          });
+        }))) ||
+      undefined;
 
-    const result = await route.callback(regexResult);
+    const result = await route.callback(regexResult, reqBody);
     res.statusCode = result.statusCode;
     if (result.body === "string") {
       res.end(result.body);
