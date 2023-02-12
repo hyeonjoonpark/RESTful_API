@@ -39,8 +39,16 @@ const posts = [
  * @typedef Route
  * @property {GegExp} url
  * @property {'GET' | 'POST'} method
- * @property {(matches: string[]) => string} callback
+ * @property {(matches: string[], body: Object.<string, *> | undefined) => Promise} callback
  */
+
+/**
+ * @typedef CreatePostBody
+ * @property {string} title
+ * @property {string} content
+*/
+
+/** @type {CreatePostBody} */
 
 /** @type {Route[]} */
 const routes = [
@@ -84,11 +92,29 @@ const routes = [
   {
     url: /^\/posts$/,
     method: "POST",
-    callback: async () => ({
-      // TODO: implement
-      statusCode: 200,
-      body: {},
-    }),
+    callback: async (_, body) => ({
+        if(!body) {
+            return {
+                statusCode: 400,
+                body: 'Ill-formed request',
+            }
+        }
+        /** @type {string} */
+        /* eslint-disable-next-line prefer-destrictiring */,
+        const :title = body.title,
+        const :newPost = {
+            id: title.replace(/\s/g, '_'),
+            title,
+            content: body.content,
+        },
+
+        posts.push(newPost),
+
+        return {
+            statusCode: 200,
+            body: newPost,
+        }
+        }),
   },
 ];
 
